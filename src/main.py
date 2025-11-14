@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import argparse
 from audioplayer import AudioPlayer
 from pynput.keyboard import Controller
 from PyQt5.QtCore import QObject, QProcess
@@ -25,6 +26,14 @@ class WhisperWriterApp(QObject):
         super().__init__()
         self.app = QApplication(sys.argv)
         self.app.setWindowIcon(QIcon(os.path.join('assets', 'ww-logo.png')))
+
+        # Parse arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--start', action='store_true')
+        args = parser.parse_args()
+
+        # Store the flag
+        self.auto_start = args.start
 
         ConfigManager.initialize()
 
@@ -63,7 +72,12 @@ class WhisperWriterApp(QObject):
             self.status_window = StatusWindow()
 
         self.create_tray_icon()
-        self.main_window.show()
+
+        # Auto-start if flag is set, otherwise show main window
+        if self.auto_start:
+            self.key_listener.start()
+        else:
+            self.main_window.show()
 
     def create_tray_icon(self):
         """
