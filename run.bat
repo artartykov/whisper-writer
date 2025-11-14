@@ -1,1 +1,1 @@
-uv run run.py
+uv run run.py %*
